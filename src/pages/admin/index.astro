@@ -1,0 +1,170 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+type Status =
+  | "Isi Data"
+  | "Checkout"
+  | "Menunggu Pembayaran"
+  | "Siap Dieksekusi";
+
+interface Order {
+  business_name: string;
+  whatsapp_number: string;
+  status: Status;
+}
+
+// Data statis untuk pratinjau UI.
+const orders: Order[] = [
+  {
+    business_name: "Kopi Senja Roastery",
+    whatsapp_number: "+62 812 3456 7890",
+    status: "Siap Dieksekusi",
+  },
+  {
+    business_name: "Batik Larasati",
+    whatsapp_number: "+62 857 1122 3344",
+    status: "Menunggu Pembayaran",
+  },
+  {
+    business_name: "Studio Kulit Manggala",
+    whatsapp_number: "+62 811 9090 1212",
+    status: "Checkout",
+  },
+  {
+    business_name: "Warung Rempah Nusa",
+    whatsapp_number: "+62 813 4455 6677",
+    status: "Isi Data",
+  },
+  {
+    business_name: "Hidroponik Kebun Awan",
+    whatsapp_number: "+62 878 3131 4141",
+    status: "Siap Dieksekusi",
+  },
+];
+
+const statusStyles: Record<Status, string> = {
+  "Isi Data": "border-ash/40 text-ash",
+  Checkout: "border-blush/50 text-blush",
+  "Menunggu Pembayaran": "border-crimson text-ember",
+  "Siap Dieksekusi":
+    "border-ember text-void bg-ember shadow-[0_0_18px_color-mix(in_srgb,#ff2d2d_60%,transparent)]",
+};
+---
+
+<Layout title="Gorixo — Admin Console">
+  <main class="relative z-10 min-h-screen">
+    <div class="pointer-events-none absolute inset-0 grid-lines opacity-30"></div>
+
+    <div class="relative mx-auto max-w-6xl px-6 py-10">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-solid pb-6 hairline">
+        <div class="flex items-center gap-3">
+          <div class="h-2.5 w-2.5 rotate-45 bg-ember shadow-[0_0_18px_#ff2d2d]"></div>
+          <div>
+            <p class="font-mono text-sm tracking-[0.3em] text-bone uppercase">
+              Gorixo Console
+            </p>
+            <p class="mt-1 font-mono text-[10px] tracking-[0.25em] text-ash uppercase">
+              Orders / Pipeline Eksekusi
+            </p>
+          </div>
+        </div>
+        <a
+          href="/"
+          class="font-mono text-xs tracking-[0.2em] text-ash uppercase transition-colors hover:text-bone"
+        >
+          &larr; Storefront
+        </a>
+      </div>
+
+      <!-- Summary row -->
+      <div class="mt-8 grid grid-cols-2 gap-px border border-solid hairline md:grid-cols-4">
+        {
+          [
+            ["Total Order", String(orders.length)],
+            [
+              "Siap Dieksekusi",
+              String(orders.filter((o) => o.status === "Siap Dieksekusi").length),
+            ],
+            [
+              "Menunggu Pembayaran",
+              String(
+                orders.filter((o) => o.status === "Menunggu Pembayaran").length,
+              ),
+            ],
+            [
+              "Isi Data",
+              String(orders.filter((o) => o.status === "Isi Data").length),
+            ],
+          ].map(([label, value]) => (
+            <div class="bg-ink px-5 py-5">
+              <p class="text-2xl font-medium tracking-tight text-bone">{value}</p>
+              <p class="mt-1 font-mono text-[10px] tracking-[0.2em] text-ash uppercase">
+                {label}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Table -->
+      <div class="mt-8 overflow-x-auto border border-solid bg-ink hairline">
+        <table class="w-full min-w-[720px] border-collapse text-left">
+          <thead>
+            <tr class="border-b border-solid hairline">
+              <th
+                class="px-6 py-4 font-mono text-[10px] tracking-[0.25em] text-ash uppercase"
+                >Nama Bisnis</th
+              >
+              <th
+                class="px-6 py-4 font-mono text-[10px] tracking-[0.25em] text-ash uppercase"
+                >WhatsApp</th
+              >
+              <th
+                class="px-6 py-4 font-mono text-[10px] tracking-[0.25em] text-ash uppercase"
+                >Status</th
+              >
+              <th
+                class="px-6 py-4 text-right font-mono text-[10px] tracking-[0.25em] text-ash uppercase"
+                >Aksi</th
+              >
+            </tr>
+          </thead>
+          <tbody>
+            {
+              orders.map((o) => (
+                <tr class="border-b border-solid transition-colors last:border-b-0 hairline hover:bg-[color-mix(in_srgb,#7a0a1c_16%,#140708)]">
+                  <td class="px-6 py-5 font-medium text-bone">
+                    {o.business_name}
+                  </td>
+                  <td class="px-6 py-5 font-mono text-sm text-ash">
+                    {o.whatsapp_number}
+                  </td>
+                  <td class="px-6 py-5">
+                    <span
+                      class={`inline-flex items-center border border-solid px-3 py-1 font-mono text-[10px] tracking-[0.15em] uppercase ${statusStyles[o.status]}`}
+                    >
+                      {o.status}
+                    </span>
+                  </td>
+                  <td class="px-6 py-5 text-right">
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-2 border border-solid border-ember px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-ember uppercase transition-colors hover:bg-ember hover:text-void"
+                    >
+                      Proses Eksekusi
+                    </button>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-6 font-mono text-[10px] tracking-[0.2em] text-ash uppercase">
+        Tampilan statis — data & aksi belum terhubung ke backend
+      </p>
+    </div>
+  </main>
+</Layout>

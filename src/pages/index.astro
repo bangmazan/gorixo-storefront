@@ -1,0 +1,243 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const capabilities = [
+  {
+    idx: "01",
+    title: "Intake",
+    body: "Kirim nama bisnis, deskripsi, dan nomor WhatsApp. Tidak ada onboarding call, tidak ada dashboard rumit.",
+  },
+  {
+    idx: "02",
+    title: "Checkout",
+    body: "Tim Gorixo menyusun katalog, harga, dan alur pesanan. Anda menerima draft untuk disetujui.",
+  },
+  {
+    idx: "03",
+    title: "Eksekusi",
+    body: "Storefront WhatsApp Anda dinyalakan. Pesanan masuk, pembayaran terverifikasi, semua terekam.",
+  },
+];
+---
+
+<Layout>
+  <main class="relative z-10 overflow-hidden">
+    <!-- Ambient field -->
+    <div class="pointer-events-none absolute inset-0 radial-ember"></div>
+    <div class="pointer-events-none absolute inset-0 grid-lines opacity-40"></div>
+
+    <!-- Nav -->
+    <header class="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-7">
+      <div class="flex items-center gap-3">
+        <div class="h-2.5 w-2.5 rotate-45 bg-ember shadow-[0_0_18px_#ff2d2d]"></div>
+        <span class="font-mono text-sm tracking-[0.3em] text-bone uppercase">Gorixo</span>
+      </div>
+      <nav class="hidden gap-8 font-mono text-xs tracking-[0.2em] text-ash uppercase md:flex">
+        <a href="#proses" class="transition-colors hover:text-bone">Proses</a>
+        <a href="#intake" class="transition-colors hover:text-bone">Intake</a>
+        <a href="/admin" class="transition-colors hover:text-ember">Console</a>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="relative mx-auto max-w-6xl px-6 pt-16 pb-24 md:pt-28">
+      <p class="font-mono text-xs tracking-[0.35em] text-ember uppercase">
+        WhatsApp Commerce — as a Service
+      </p>
+      <h1 class="mt-8 max-w-4xl text-5xl leading-[0.95] font-medium tracking-tight text-balance sm:text-6xl md:text-8xl">
+        Toko Anda hidup di
+        <span class="text-glow text-ember">WhatsApp</span>.
+        Kami yang membangun dan menjalankannya.
+      </h1>
+      <p class="mt-8 max-w-xl text-lg leading-relaxed text-ash">
+        Gorixo adalah lini produksi untuk perdagangan percakapan. Anda serahkan
+        bisnisnya — kami rakit katalog, checkout, dan verifikasi pembayaran, lalu
+        eksekusi.
+      </p>
+
+      <div class="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <a
+          href="#intake"
+          class="group relative inline-flex items-center justify-center gap-3 bg-ember px-8 py-4 font-mono text-sm tracking-[0.15em] text-void uppercase transition-transform hover:-translate-y-0.5"
+        >
+          Mulai Intake
+          <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+        </a>
+        <a
+          href="#proses"
+          class="inline-flex items-center justify-center border border-solid px-8 py-4 font-mono text-sm tracking-[0.15em] text-bone uppercase transition-colors hairline hover:border-ember"
+        >
+          Lihat Cara Kerja
+        </a>
+      </div>
+
+      <!-- Stat strip -->
+      <dl class="mt-20 grid grid-cols-2 gap-px border border-solid bg-[color-mix(in_srgb,#ff2d2d_14%,transparent)] hairline md:grid-cols-4">
+        {
+          [
+            ["48 jam", "Rata-rata go-live"],
+            ["0", "Baris kode dari Anda"],
+            ["100%", "Pesanan terekam"],
+            ["24/7", "Storefront aktif"],
+          ].map(([big, small]) => (
+            <div class="bg-void px-6 py-7">
+              <dt class="text-3xl font-medium tracking-tight text-bone">{big}</dt>
+              <dd class="mt-2 font-mono text-[11px] tracking-[0.2em] text-ash uppercase">
+                {small}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <!-- Process -->
+    <section id="proses" class="relative border-t border-solid hairline">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-3xl font-medium tracking-tight md:text-4xl">
+            Tiga langkah, satu jalur produksi
+          </h2>
+          <span class="hidden font-mono text-xs tracking-[0.3em] text-ash uppercase md:block">
+            /pipeline
+          </span>
+        </div>
+        <div class="mt-16 grid gap-px border border-solid hairline md:grid-cols-3">
+          {
+            capabilities.map((c) => (
+              <article class="group bg-ink px-8 py-10 transition-colors hover:bg-[color-mix(in_srgb,#7a0a1c_20%,#140708)]">
+                <span class="font-mono text-sm tracking-[0.3em] text-ember">
+                  {c.idx}
+                </span>
+                <h3 class="mt-6 text-2xl font-medium tracking-tight text-bone">
+                  {c.title}
+                </h3>
+                <p class="mt-4 leading-relaxed text-ash">{c.body}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Intake form -->
+    <section id="intake" class="relative border-t border-solid hairline">
+      <div class="mx-auto grid max-w-6xl gap-16 px-6 py-24 lg:grid-cols-[1fr_1.1fr]">
+        <div>
+          <p class="font-mono text-xs tracking-[0.35em] text-ember uppercase">
+            Formulir Intake Kustomer
+          </p>
+          <h2 class="mt-6 text-4xl leading-tight font-medium tracking-tight md:text-5xl">
+            Serahkan bisnis Anda.
+            <br />
+            Kami ambil dari sini.
+          </h2>
+          <p class="mt-6 max-w-md leading-relaxed text-ash">
+            Isi tiga kolom di bawah. Tim Gorixo akan menghubungi via WhatsApp
+            dalam 1&times;24 jam untuk konfirmasi katalog dan memulai checkout.
+          </p>
+
+          <ul class="mt-10 space-y-4 font-mono text-xs tracking-[0.15em] text-ash uppercase">
+            <li class="flex items-center gap-3">
+              <span class="h-1.5 w-1.5 bg-ember"></span> Tanpa biaya setup
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="h-1.5 w-1.5 bg-ember"></span> Data Anda tidak dibagikan
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="h-1.5 w-1.5 bg-ember"></span> Batalkan kapan saja
+            </li>
+          </ul>
+        </div>
+
+        <div class="relative border border-solid bg-ink p-8 hairline md:p-10">
+          <div
+            class="pointer-events-none absolute -top-px -right-px h-16 w-16 border-t-2 border-r-2 border-ember"
+          >
+          </div>
+
+          <form
+            method="POST"
+            action="/api/intake"
+            class="flex flex-col gap-7"
+          >
+            <div class="flex flex-col gap-3">
+              <label
+                for="business_name"
+                class="font-mono text-[11px] tracking-[0.25em] text-bone uppercase"
+              >
+                Nama Bisnis <span class="text-ember">*</span>
+              </label>
+              <input
+                type="text"
+                id="business_name"
+                name="business_name"
+                required
+                autocomplete="organization"
+                placeholder="Kopi Senja Roastery"
+                class="border-b border-solid bg-transparent px-1 py-3 text-lg text-bone outline-none transition-colors hairline placeholder:text-ash/60 focus:border-ember"
+              />
+            </div>
+
+            <div class="flex flex-col gap-3">
+              <label
+                for="description"
+                class="font-mono text-[11px] tracking-[0.25em] text-bone uppercase"
+              >
+                Deskripsi Bisnis
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows="4"
+                placeholder="Apa yang Anda jual, siapa pelanggan Anda, kisaran harga."
+                class="resize-none border border-solid bg-transparent px-3 py-3 text-base leading-relaxed text-bone outline-none transition-colors hairline placeholder:text-ash/60 focus:border-ember"
+              ></textarea>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              <label
+                for="whatsapp_number"
+                class="font-mono text-[11px] tracking-[0.25em] text-bone uppercase"
+              >
+                Nomor WhatsApp <span class="text-ember">*</span>
+              </label>
+              <input
+                type="tel"
+                id="whatsapp_number"
+                name="whatsapp_number"
+                required
+                inputmode="tel"
+                pattern="[0-9+\-\s]{8,20}"
+                autocomplete="tel"
+                placeholder="+62 812 3456 7890"
+                class="border-b border-solid bg-transparent px-1 py-3 text-lg text-bone outline-none transition-colors hairline placeholder:text-ash/60 focus:border-ember"
+              />
+              <p class="font-mono text-[10px] tracking-[0.15em] text-ash uppercase">
+                Wajib — kanal utama koordinasi eksekusi
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              class="group mt-2 inline-flex items-center justify-center gap-3 bg-ember px-8 py-4 font-mono text-sm tracking-[0.15em] text-void uppercase transition-transform hover:-translate-y-0.5"
+            >
+              Kirim Intake
+              <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative border-t border-solid hairline">
+      <div
+        class="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-10 font-mono text-xs tracking-[0.2em] text-ash uppercase sm:flex-row sm:items-center sm:justify-between"
+      >
+        <span>&copy; {new Date().getFullYear()} Gorixo — WaaS Platform</span>
+        <span>Dibangun untuk perdagangan percakapan</span>
+      </div>
+    </footer>
+  </main>
+</Layout>

@@ -1,0 +1,10 @@
+name = "gorixo-storefront"
+compatibility_date = "2026-09-07"
+pages_build_output_dir = "dist"
+
+# Cloudflare D1 — database utama untuk intake & pipeline eksekusi order.
+[[d1_databases]]
+binding = "DB"
+database_name = "gorixo_db"
+database_id = "f4655fc1-566b-4cc1-b24a-5fa177ebc28c"
+migrations_dir = "migrations"
