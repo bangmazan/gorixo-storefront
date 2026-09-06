@@ -1,6 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
+// Landing page tidak butuh data dinamis — tetap di-prerender jadi HTML statis
+// walau output global = 'server'.
+export const prerender = true;
+
 const capabilities = [
   {
     idx: "01",
