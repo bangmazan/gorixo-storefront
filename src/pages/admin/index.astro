@@ -1,5 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+// Astro v7 / @astrojs/cloudflare v14: binding lewat `cloudflare:workers`
+// (menggantikan `Astro.locals.runtime.env` yang dihapus sejak Astro v6).
+import { env } from "cloudflare:workers";
+
+export const prerender = false;
 
 type Status =
   | "Isi Data"
@@ -8,39 +13,13 @@ type Status =
   | "Siap Dieksekusi";
 
 interface Order {
+  id: number;
   business_name: string;
+  description: string | null;
   whatsapp_number: string;
   status: Status;
+  created_at: string;
 }
-
-// Data statis untuk pratinjau UI.
-const orders: Order[] = [
-  {
-    business_name: "Kopi Senja Roastery",
-    whatsapp_number: "+62 812 3456 7890",
-    status: "Siap Dieksekusi",
-  },
-  {
-    business_name: "Batik Larasati",
-    whatsapp_number: "+62 857 1122 3344",
-    status: "Menunggu Pembayaran",
-  },
-  {
-    business_name: "Studio Kulit Manggala",
-    whatsapp_number: "+62 811 9090 1212",
-    status: "Checkout",
-  },
-  {
-    business_name: "Warung Rempah Nusa",
-    whatsapp_number: "+62 813 4455 6677",
-    status: "Isi Data",
-  },
-  {
-    business_name: "Hidroponik Kebun Awan",
-    whatsapp_number: "+62 878 3131 4141",
-    status: "Siap Dieksekusi",
-  },
-];
 
 const statusStyles: Record<Status, string> = {
   "Isi Data": "border-ash/40 text-ash",
@@ -49,6 +28,31 @@ const statusStyles: Record<Status, string> = {
   "Siap Dieksekusi":
     "border-ember text-void bg-ember shadow-[0_0_18px_color-mix(in_srgb,#ff2d2d_60%,transparent)]",
 };
+
+const badgeClass = (status: string) =>
+  statusStyles[status as Status] ?? "border-ash/40 text-ash";
+
+// --- Tarik data dari Cloudflare D1 ---
+const db = env.gorixo_db as D1Database | undefined;
+
+let orders: Order[] = [];
+let dbError: string | null = null;
+
+if (db) {
+  try {
+    const { results } = await db
+      .prepare("SELECT * FROM orders ORDER BY created_at DESC")
+      .all<Order>();
+    orders = results ?? [];
+  } catch (err) {
+    dbError = err instanceof Error ? err.message : String(err);
+  }
+} else {
+  dbError = "Binding D1 (gorixo_db) tidak tersedia pada runtime ini.";
+}
+
+const countBy = (status: Status) =>
+  String(orders.filter((o) => o.status === status).length);
 ---
 
 <Layout title="Gorixo — Admin Console">
@@ -82,20 +86,9 @@ const statusStyles: Record<Status, string> = {
         {
           [
             ["Total Order", String(orders.length)],
-            [
-              "Siap Dieksekusi",
-              String(orders.filter((o) => o.status === "Siap Dieksekusi").length),
-            ],
-            [
-              "Menunggu Pembayaran",
-              String(
-                orders.filter((o) => o.status === "Menunggu Pembayaran").length,
-              ),
-            ],
-            [
-              "Isi Data",
-              String(orders.filter((o) => o.status === "Isi Data").length),
-            ],
+            ["Siap Dieksekusi", countBy("Siap Dieksekusi")],
+            ["Menunggu Pembayaran", countBy("Menunggu Pembayaran")],
+            ["Isi Data", countBy("Isi Data")],
           ].map(([label, value]) => (
             <div class="bg-ink px-5 py-5">
               <p class="text-2xl font-medium tracking-tight text-bone">{value}</p>
@@ -134,15 +127,18 @@ const statusStyles: Record<Status, string> = {
             {
               orders.map((o) => (
                 <tr class="border-b border-solid transition-colors last:border-b-0 hairline hover:bg-[color-mix(in_srgb,#7a0a1c_16%,#140708)]">
-                  <td class="px-6 py-5 font-medium text-bone">
-                    {o.business_name}
+                  <td class="px-6 py-5">
+                    <span class="font-medium text-bone">{o.business_name}</span>
+                    <span class="mt-1 block font-mono text-[10px] tracking-[0.15em] text-ash uppercase">
+                      {o.created_at}
+                    </span>
                   </td>
                   <td class="px-6 py-5 font-mono text-sm text-ash">
                     {o.whatsapp_number}
                   </td>
                   <td class="px-6 py-5">
                     <span
-                      class={`inline-flex items-center border border-solid px-3 py-1 font-mono text-[10px] tracking-[0.15em] uppercase ${statusStyles[o.status]}`}
+                      class={`inline-flex items-center border border-solid px-3 py-1 font-mono text-[10px] tracking-[0.15em] uppercase ${badgeClass(o.status)}`}
                     >
                       {o.status}
                     </span>
@@ -150,21 +146,87 @@ const statusStyles: Record<Status, string> = {
                   <td class="px-6 py-5 text-right">
                     <button
                       type="button"
-                      class="inline-flex items-center gap-2 border border-solid border-ember px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-ember uppercase transition-colors hover:bg-ember hover:text-void"
+                      data-execute
+                      data-order-id={o.id}
+                      disabled={o.status === "Siap Dieksekusi"}
+                      class="inline-flex items-center gap-2 border border-solid border-ember px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-ember uppercase transition-colors hover:bg-ember hover:text-void disabled:cursor-not-allowed disabled:border-ash/40 disabled:text-ash disabled:hover:bg-transparent disabled:hover:text-ash aria-busy:animate-pulse"
                     >
-                      Proses Eksekusi
+                      <span data-label>
+                        {o.status === "Siap Dieksekusi"
+                          ? "Sudah Dieksekusi"
+                          : "Proses Eksekusi"}
+                      </span>
                     </button>
                   </td>
                 </tr>
               ))
+            }
+            {
+              orders.length === 0 && (
+                <tr>
+                  <td
+                    colspan="4"
+                    class="px-6 py-12 text-center font-mono text-xs tracking-[0.2em] text-ash uppercase"
+                  >
+                    {dbError ? `D1: ${dbError}` : "Belum ada order masuk"}
+                  </td>
+                </tr>
+              )
             }
           </tbody>
         </table>
       </div>
 
       <p class="mt-6 font-mono text-[10px] tracking-[0.2em] text-ash uppercase">
-        Tampilan statis — data & aksi belum terhubung ke backend
+        Data langsung dari Cloudflare D1 — SELECT * FROM orders ORDER BY created_at DESC
       </p>
     </div>
   </main>
 </Layout>
+
+<script>
+  // Wiring tombol "Proses Eksekusi" -> POST /api/execute
+  const buttons = document.querySelectorAll<HTMLButtonElement>(
+    "button[data-execute]",
+  );
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const orderId = Number(btn.dataset.orderId);
+      if (!Number.isInteger(orderId) || orderId <= 0 || btn.disabled) return;
+
+      const label = btn.querySelector<HTMLElement>("[data-label]") ?? btn;
+      btn.disabled = true;
+      btn.setAttribute("aria-busy", "true");
+      label.textContent = "Memproses…";
+
+      try {
+        const res = await fetch("/api/execute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order_id: orderId }),
+        });
+        const data = (await res.json().catch(() => ({}))) as {
+          success?: boolean;
+          error?: string;
+        };
+
+        if (res.ok && data.success) {
+          label.textContent = "Berhasil";
+          // Refresh halaman agar status & ringkasan ikut terbarui.
+          window.location.reload();
+        } else {
+          console.error("Eksekusi gagal:", data.error ?? res.status);
+          label.textContent = "Gagal — coba lagi";
+          btn.disabled = false;
+          btn.removeAttribute("aria-busy");
+        }
+      } catch (err) {
+        console.error("Eksekusi error:", err);
+        label.textContent = "Gagal — coba lagi";
+        btn.disabled = false;
+        btn.removeAttribute("aria-busy");
+      }
+    });
+  });
+</script>

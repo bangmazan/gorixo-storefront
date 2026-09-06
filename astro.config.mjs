@@ -11,5 +11,8 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  adapter: cloudflare()
+  adapter: cloudflare({
+    // Muat binding dari wrangler.toml (D1, vars) saat `astro dev` via miniflare.
+    platformProxy: { enabled: true }
+  })
 });

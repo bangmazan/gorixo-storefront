@@ -1,0 +1,10 @@
+# Salin ke `.dev.vars` untuk dev lokal (dibaca miniflare / platformProxy).
+# Produksi: `npx wrangler secret put GEMINI_API_KEY` & `... GITHUB_TOKEN`
+#           atau set via Cloudflare Dashboard > Workers & Pages > Settings > Variables.
+
+# Google Gemini API key — dipakai src/pages/api/execute.ts untuk generate index.mdx
+GEMINI_API_KEY=
+
+# GitHub PAT (scope: repo) — dipakai src/pages/api/execute.ts untuk
+# POST /repos/bangmazan/waas-base-premium/generate
+GITHUB_TOKEN=

@@ -10,5 +10,18 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	// Nomor WhatsApp CS admin (format internasional tanpa "+"), tujuan redirect intake.
+	"vars": {
+		"CS_WHATSAPP_NUMBER": "6281234567890"
+	},
+	// Cloudflare D1 — diakses via Astro.locals.runtime.env.gorixo_db
+	"d1_databases": [
+		{
+			"binding": "gorixo_db",
+			"database_name": "gorixo_db",
+			"database_id": "f4655fc1-566b-4cc1-b24a-5fa177ebc28c",
+			"migrations_dir": "migrations"
+		}
+	]
 }
